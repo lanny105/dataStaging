@@ -1,0 +1,65 @@
+    html {
+      min-height: 100%;
+    }
+
+    body {
+      background-color: rgba(43,101,131,1);
+      background: linear-gradient(rgba(43,101,131,1), rgba(14,53,74,1)); /* Standard syntax */
+      min-height: 100%;
+    }
+
+    #mainform {
+      padding: 15px 15px;
+      background-color: white;
+      border-radius: 10px;
+      width: 60%;
+      margin-left: 20%;
+      margin-top: 100px;
+    }
+
+    #answersection {
+      padding: 15px 15px;
+      background-color: white;
+      border-radius: 10px;
+
+      width: 80%;
+      margin-left: 10%;
+      margin-top: 100px;
+    }
+
+    .capital {
+      font-family: sans-serif;
+      font-size: 28px;
+    }
+
+    .panel-body {
+      padding: 25px;
+    }
+
+    #errmsg{
+      color: red;
+    }
+
+
+    .bar {
+      fill: steelblue;
+    }
+
+    .bar:hover {
+      fill: brown;
+    }
+
+    .axis {
+      font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .x.axis path {
+      display: none;
+    }

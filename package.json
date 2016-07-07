@@ -1,0 +1,34 @@
+{
+  "name": "Challenge",
+  "version": "1.0.0",
+  "description": "for internship",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "front-end",
+    "back-end"
+  ],
+  "author": "Qiuyang Ye",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "ejs": "^2.4.1",
+    "express": "^4.13.4",
+    "moment": "2.13.0",
+    "multer": "1.1.0",
+    "csvtojson": "0.5.12",
+    "parse": "1.8.5"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lanny105/Challenge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lanny105/Challenge/issues"
+  },
+  "homepage": "https://github.com/lanny105/Challenge#readme"
+}
