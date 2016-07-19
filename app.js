@@ -18,181 +18,41 @@ app.set('view engine', 'html');
 
 
 var moment = require('moment');
-var Parse = require('parse/node');
-
-//var ParseList;
-
-
+var Parse_dev = require('parse/node');
 
 function initParse() {
-    Parse.initialize("GGTNZ2qrKXClObC4qotCEIBCFEpytaSscYJ7yzcG", "FEmiLsJNjftJ2kMob61vequskh6COimJvPSmYqZo");
+//    Parse_dev.initialize("GGTNZ2qrKXClObC4qotCEIBCFEpytaSscYJ7yzcG",  "FEmiLsJNjftJ2kMob61vequskh6COimJvPSmYqZo");  //测试
+//    
+//    Parse_pro.initialize("4sMKBkz4xAcbBXyJ0n23idKJXfVm3Z0GsM34DZHZ",
+//    "dRcA6Lt5jf5k07i7sLNsMZThlBVSO8C0uJaB01WQ");
+//    
+    Parse_dev.initialize("24t24lAA1VrzzlpqqB58ZMowWQTBbIG7v2O5lsPW");
+    Parse_dev.serverURL = "http://concon-admin-data-dev.herokuapp.com/parse";
+    
+//    
+//    Parse_dev.initialize("4sMKBkz4xAcbBXyJ0n23idKJXfVm3Z0GsM34DZHZ");
+//    Parse_dev.serverURL = "http://concon-live-data-dev.herokuapp.com/parse";
+//    
+    
+}
+
+function changeParse() {
+//    Parse_dev.initialize("GGTNZ2qrKXClObC4qotCEIBCFEpytaSscYJ7yzcG",  "FEmiLsJNjftJ2kMob61vequskh6COimJvPSmYqZo");  //测试
+//    
+//    Parse_pro.initialize("4sMKBkz4xAcbBXyJ0n23idKJXfVm3Z0GsM34DZHZ",
+//    "dRcA6Lt5jf5k07i7sLNsMZThlBVSO8C0uJaB01WQ");
+    
+    Parse_dev.initialize("4sMKBkz4xAcbBXyJ0n23idKJXfVm3Z0GsM34DZHZ");
+    Parse_dev.serverURL = "http://concon-live-data-dev.herokuapp.com/parse";
+//    
+    
 }
 
 
-
-function cpstring(a, b) {
-    
-    if (a.indexOf(b)!=-1||b.indexOf(a)!=-1) return true;
-    return false;
-}
-
-
-
-function compare(parseObj, obj){
-    
-    var res = [];
-//    console.log(obj);
-//    console.log("------------");
-    
-    for(var i = 0; i < obj.length; ++i) {
-        
-        var flag = 2;
-//        console.log(i);
-        
-        for(var j = 0; j < parseObj.length; ++j) {
-            if(obj[i].eventCity.toLowerCase() == parseObj[j].get("eventCity").toLowerCase() && cpstring(obj[i].name.toLowerCase(),parseObj[j].get("eventName").toLowerCase()) && parseObj[j].get("eventStartDate").toISOString().substring(0, 10) == new Date(obj[i].eventStartDate).toISOString().substring(0, 10)) {
-                
-                flag = 0;
-                break; // 名字  时间  地点都一样  肯定重复
-            }
-            
-            else if( parseObj[j].get("eventStartDate").toISOString().substring(0, 10) != new Date(obj[i].eventStartDate).toISOString().substring(0, 10) ||   (obj[i].eventCity.toLowerCase() != parseObj[j].get("eventCity").toLowerCase()))  {
-                //开始时间  或者  城市不一样   //认为肯定不重复
-//                parse.insert 名字不一样  时间也不一样  肯定不重复
-//                console.log(parseObj[j].get("eventStartDate"));
-//                console.log(obj[i].eventStartDate);
-//                console.log(obj[i].eventCity.toLowerCase());
-//                console.log(parseObj[j].get("eventCity").toLowerCase());
-
-            }
-//            
-            else {
-                flag = 1;
-                //开始时间   城市都一样   就是名字不一样
-//              res.push(obj[i]);   //剩下的就要人工加了
-            } 
-        }
-        
-        if(flag == 2) {
-            
-//            console.log("need insert!");
-            var Event = Parse.Object.extend("Event");
-                var event = new Event();
-                
-                
-                event.set("artistAlleyApplicationStatus",1);
-                event.set("artistAlleyBoothPrice",0);
-//                event.set("artistAlleyContactInfo");
-                event.set("artistAlleySpotsAvailablility",0);
-                
-                if (obj[i].registerURL!="") {
-                    event.set("artistsAlleyRegistrationUrl",obj[i].registerURL);
-                }
-                else {
-                    event.set("artistsAlleyRegistrationUrl","N/A");
-                }
-
-                if (obj[i].atDoorTicketPrices!="") {
-                    event.set("atDoorTicketPrices",obj[i].atDoorRates);
-                }
-                else {
-                    event.set("atDoorTicketPrices","N/A");
-                }
-                
-//                event.set("boothEnrollmentEndDay");
-//                event.set("boothOpenEnrollmentDay");
-//                event.set("exhibitorBoothEnrollmentEndDay");
-//                event.set("exhibitorBoothOpenEnrollmentDay");
-                
-                event.set("eventAddress","");
-//                event.set("eventAttendancePriorYear");
-                
-                
-                event.set("eventCity",obj[i].eventCity);
-                event.set("eventCountry",obj[i].eventCountry);
-                event.set("eventDescription",obj[i].description);
-                
-                event.set("eventHomeUrl",obj[i].siteURL);
-                
-                var point = new Parse.GeoPoint({latitude: obj[i].latitude, longitude: obj[i].longitude});
-                event.set("eventLatLong",point);
-                event.set("eventName",obj[i].name);
-                
-            if(obj[i].eventStartDate!="") {
-                event.set("eventStartDate",new Date(obj[i].eventStartDate));
-            }
-            
-            if(obj[i].eventEndDate!="") {
-                event.set("eventEndDate",new Date(obj[i].eventEndDate));
-            }
-                
-//                event.set("eventStartTime");
-                event.set("eventState",obj[i].eventState);
-                event.set("eventStatus","NORMAL");
-                
-
-                event.set("eventType",obj[i].eventType);
-
-                event.set("eventVenue",obj[i].eventVenue);
-                
-                event.set("exhibitorApplicationStatus",1);
-                event.set("exhibitorBoothPrice",0);
-//                event.set("exhibitorContactInfo","");
-//                event.set("exhibitorSpotsAvailable","");
-                event.set("exhibitorsBoothRegistrationUrl","N/A");
-                event.set("fanTicketRegistrationUrl","N/A");
-                event.set("featuredEvent",false);
-                event.set("notes","");
-                event.set("organizerContactUrl","");
-                event.set("presaleTicketPrices","N/A");
-                event.set("eventNamelower_case","");
-                event.set("hiddenEvent",false);
-            event.set("newData",true);
-            event.set("prodData",false);
-                
-                event.save(null, {
-                    success: function(event) {
-                        // Execute any logic that should take place after the object is saved.
-//                        alert('New object created with objectId: ' + gameScore.id);
-                        console.log("not duplicate and insert into parse!!!!!!");
-                    },
-                    error: function(event, error) {
-                        // Execute any logic that should take place if the save fails.
-                        // error is a Parse.Error with an error code and message.
-//                        alert('Failed to create new object, with error code: ' + error.message);
-                        console.log(error);
-                    }
-                });
-        } 
-        
-        else if (flag == 1) {
-            
-            res.push(obj[i]);
-//            console.log("can't decide!!!!!!");
-        }
-        
-        else {
-//            console.log("replica!!!!!!");
-            console.log(obj[i].name);
-        }
-        
-    }
-//    console.log('finished!');
-//    console.log(res);
-
-    console.log(res.length);
-    
-    return res;
-}
-
-
-
-
-function getParse(obj,callback) {
-    var Event = Parse.Object.extend("Event");
-    var query = new Parse.Query(Event);
+function getParse(callback) {
+    var Event = Parse_dev.Object.extend("Event");
+    var query = new Parse_dev.Query(Event);
     var count = 0;
-    var obj = JSON.parse(obj);
     var res = []
     
     query.count({
@@ -201,7 +61,7 @@ function getParse(obj,callback) {
             var cycles = Math.ceil(count / chunk);
             var t = 0;
             for (i = 0; i < cycles; i++) {
-                var _query = new Parse.Query("Event");
+                var _query = new Parse_dev.Query("Event");
                 _query.descending("createdAt");
                 _query._limit = chunk;
                 _query._skip = i * chunk;
@@ -212,11 +72,12 @@ function getParse(obj,callback) {
                     success: function(results) {
                         res = res.concat(results);
                         
+                        
+                        console.log(results);
                         t++;
                         if(t == cycles) {
 //                            console.log(res);
-                            
-                            callback(compare(res,obj)); 
+                            callback(res); 
                         }
                     },
                     error: function(error) {
@@ -233,7 +94,6 @@ function getParse(obj,callback) {
     });
     
 }
-
 
 
 
@@ -275,64 +135,655 @@ app.use(function(req, res, next) {
 
 
 app.get('/', function (req, res) {
+    initParse();
     res.sendFile( __dirname + "/" + "index.html" );
 })
 
-
-app.get('/result', function (req, res) {
-
-    if (req.query.Filename==null) {
-        console.log('filename missing!');
-        res.render("result.html", {name:""});
-        return;
-    };
-
-    res.render("result.html", { name: req.query.Filename });
+app.get('/add', function (req, res) {
+    initParse();
+    res.render("add.html",{});
 })
+
+
+//
+//app.get('/result', function (req, res) {
+//
+//    if (req.query.Filename==null) {
+//        console.log('filename missing!');
+//        res.render("result.html", {name:""});
+//        return;
+//    };
+//
+//    res.render("result.html", { name: req.query.Filename });
+//})
 
 
 
 app.get('/process_get', function (req, res) {
+    
+    getParse(function(data){
+        console.log({"data":data});
+        
+//        for(var i = 0; i < data.length; i++) {
+//            console.log(data[i].get('eventName'));
+//            console.log(data[i].get('eventStartDate'));
+//            console.log(data[i].get('eventCity'));
+//        }
+    
+        
+        res.json({"data":data});
+    });
+    
+})
 
-    if (req.query.Filename==null||req.query.Filename=="") {
-        console.log('arguments missing!');
-        res.json(JSON.stringify([]));
-        return;
-    };
+app.get('/show', function (req, res) {
+    
+    var Event = Parse_dev.Object.extend("Event");
+    var query = new Parse_dev.Query(Event);
+    query.get(req.query.data, {
+      success: function(Event) {
+        // The object was retrieved successfully.
+//          console.log(Event.get("eventName"));
+          
+          res.render("show.html", { event: Event });
+      },
+      error: function(object, error) {
+        // The object was not retrieved successfully.
+        // error is a Parse.Error with an error code and message.
+          res.end("no pages available!");
+      }
+    });    
+})
 
-    try{
-        fs.accessSync(__dirname + "/tmp_file/" + req.query.Filename, fs.R_OK | fs.W_OK)
-    }catch(e){
-         //error
-        console.log('files missing!');
-        res.json(JSON.stringify([]));
-        return;
+app.get('/edit', function (req, res) {
+    
+    initParse();
+    
+    var Event = Parse_dev.Object.extend("Event");
+    var query = new Parse_dev.Query(Event);
+    query.get(req.query.data, {
+      success: function(Event) {
+        // The object was retrieved successfully.
+//          console.log(Event.get("eventLatLong").latitude);
+//          console.log(Event.get("eventLatLong").longitude);
+          
+//          console.log(Event.id);
+          
+          res.render("edit.html", { event: Event });
+      },
+      error: function(object, error) {
+        // The object was not retrieved successfully.
+        // error is a Parse.Error with an error code and message.
+          res.end("no pages available!");
+      }
+    });    
+})
+
+
+app.post('/add', function (req, res) {
+    initParse();
+    
+    console.log(req.body);
+    
+    var Event = Parse_dev.Object.extend("Event");
+    var event = new Event();
+
+    event.set("artistAlleyApplicationStatus", parseInt(req.body.artistAlleyApplicationStatus));
+         
+    event.set("artistAlleyBoothPrice",Number(req.body.artistAlleyBoothPrice));
+    
+    event.set("artistAlleySpotsAvailablility",Number(req.body.artistAlleySpotsAvailablility));
+             
+    if (req.body.artistsAlleyRegistrationUrl!="") {
+        event.set("artistsAlleyRegistrationUrl",req.body.artistsAlleyRegistrationUrl);
+    }
+    else {
+        event.set("artistsAlleyRegistrationUrl","N/A");
     }
     
-    //Converter Class 
-    var Converter = require("csvtojson").Converter;
-    var converter = new Converter({});
-    
-    //end_parsed will be emitted once parsing finished 
-    converter.on("end_parsed", function (jsonArray) {
-
-        var json = JSON.stringify(jsonArray)
-
-//        var resArray = ugetParse(json);   
-//        res.json(JSON.stringify(json));
-        
-        getParse(json,function (return_value) {
-//            console.log(return_value);
-//            res.end(JSON.stringify([]));
-            res.end(JSON.stringify(return_value)); 
+    if (req.body.atDoorTicketPrices!="") {
+        event.set("atDoorTicketPrices", req.body.atDoorTicketPrices);
+    }
+    else {
+        event.set("atDoorTicketPrices","N/A");
+    }
             
-        });
-//        
-        
-    });
+    event.set("eventAddress",req.body.eventAddress);
+         
+    event.set("eventCity",req.body.eventCity);
+    event.set("eventCountry",req.body.eventCountry);
+    event.set("eventDescription",req.body.eventDescription);
+    
+    event.set("eventHomeUrl",req.body.eventHomeUrl);
+           
 
-    fs.createReadStream(__dirname + "/tmp_file/"+req.query.Filename).pipe(converter);
+    if(Number(req.body.latitude)!=NaN && Number(req.body.longitude)!=NaN) {
+        var point = new Parse_dev.GeoPoint({latitude: Number(req.body.latitude), longitude: Number(req.body.longitude)});
+
+        event.set("eventLatLong",point);                    
+    }
+                
+    event.set("eventName",req.body.eventName);
+                
+    if(req.body.eventStartDate!='') {
+        event.set("eventStartDate",new Date(req.body.eventStartDate) +" UTC");
+    }
+      
+    if(req.body.eventEndDate!='') {
+        event.set("eventEndDate",new Date(req.body.eventEndDate + " UTC"));
+    }
+
+    event.set("eventState",req.body.eventState);
+    if(req.body.eventStatus!='undefined')event.set("eventStatus",req.body.eventStatus);
+ 
+    
+    event.set("eventType",req.body.eventType);
+
+    event.set("eventVenue",req.body.eventVenue);
+    event.set("eventZip",req.body.eventZip);
+                    
+    event.set("exhibitorApplicationStatus",Number(req.body.exhibitorApplicationStatus));
+    event.set("exhibitorBoothPrice",Number(req.body.exhibitorBoothPrice));
+
+    event.set("exhibitorsBoothRegistrationUrl",req.body.exhibitorsBoothRegistrationUrl);
+    event.set("fanTicketRegistrationUrl",req.body.fanTicketRegistrationUrl);
+          
+    event.set("notes",req.body.notes);
+    event.set("organizerContactUrl",req.body.organizerContactUrl);
+    event.set("presaleTicketPrices",req.body.presaleTicketPrices);
+                
+    event.set("eventCategory",req.body.eventCategory);
+
+    if(req.body.featuredEvent != undefined) {
+        event.set("featuredEvent",true);
+    }
+    else {
+        event.set("featuredEvent",false);
+    }
+
+    if(req.body.hidden != undefined) {
+        event.set("hiddenEvent",true);
+    }
+    else {
+        event.set("hiddenEvent",false);
+    }
+    if(req.body.newData != undefined) {
+        event.set("newData",true);
+    }
+    else {
+        event.set("newData",false);
+    }
+
+
+    if(req.body.prodData != undefined) {
+        event.set("prodData",true);
+    }
+    else {
+        event.set("prodData",false);
+    }
+    
+    if(req.body.eventAttendancePriorYear != undefined) {
+        event.set("eventAttendancePriorYear",parseInt(req.body.eventAttendancePriorYear));  
+        console.log(event.get("eventAttendancePriorYear"));
+    }
+                
+    event.save(null, {
+        success: function(event) {
+                                    
+            if(event.get("prodData")) {
+
+                changeParse();
+                
+                console.log("hhe");
+
+                var Event = Parse_dev.Object.extend("Event");
+                var event2 = new Event();
+                        
+                event2.set("artistAlleyApplicationStatus", parseInt(req.body.artistAlleyApplicationStatus));
+                        
+                event2.set("artistAlleyBoothPrice",Number(req.body.artistAlleyBoothPrice));
+                event2.set("artistAlleySpotsAvailablility",Number(req.body.artistAlleySpotsAvailablility));
+                           
+                if (req.body.artistsAlleyRegistrationUrl!="") {
+                    event2.set("artistsAlleyRegistrationUrl",req.body.artistsAlleyRegistrationUrl);
+                }
+                else {
+                    event2.set("artistsAlleyRegistrationUrl","N/A");
+                }
+
+                if (req.body.atDoorTicketPrices!="") {
+                    event2.set("atDoorTicketPrices", req.body.atDoorTicketPrices);
+                }
+                else {
+                    event2.set("atDoorTicketPrices","N/A");
+                }
+              
+                event2.set("eventAddress",req.body.eventAddress);
+            
+                event2.set("eventCity",req.body.eventCity);
+                event2.set("eventCountry",req.body.eventCountry);
+                event2.set("eventDescription",req.body.eventDescription);
+                            
+                event2.set("eventHomeUrl",req.body.eventHomeUrl);             
+
+                if(Number(req.body.latitude)!=NaN && Number(req.body.longitude)!=NaN) {
+                    var point = new Parse_dev.GeoPoint({latitude: Number(req.body.latitude), longitude: Number(req.body.longitude)});
+
+
+                    event2.set("eventLatLong",point);
+
+                }
+                event2.set("eventName",req.body.eventName);
+           
+                if(req.body.eventStartDate!='') {
+                    event2.set("eventStartDate",new Date(req.body.eventStartDate + " UTC"));
+                }
+                
+        
+                if(req.body.eventEndDate!='') {
+                    event2.set("eventEndDate",new Date(req.body.eventEndDate + " UTC"));
+                }
+        
+                event2.set("eventState",req.body.eventState);
+                
+                if(req.body.eventStatus!='undefined')event2.set("eventStatus",req.body.eventStatus);
+
+                event2.set("eventType",req.body.eventType);
+
+                event2.set("eventVenue",req.body.eventVenue);
+                            
+                event2.set("exhibitorApplicationStatus",Number(req.body.exhibitorApplicationStatus));
+                event2.set("exhibitorBoothPrice",Number(req.body.exhibitorBoothPrice));
+
+                event2.set("exhibitorsBoothRegistrationUrl",req.body.exhibitorsBoothRegistrationUrl);
+                event2.set("fanTicketRegistrationUrl",req.body.fanTicketRegistrationUrl);
+                        
+                event2.set("notes",req.body.notes);
+                event2.set("organizerContactUrl",req.body.organizerContactUrl);
+                event2.set("presaleTicketPrices",req.body.presaleTicketPrices);
+                            
+                event2.set("eventCategory",req.body.eventCategory);
+
+                if(req.body.featuredEvent != undefined) {
+                    event2.set("featuredEvent",true);
+                }
+                else {
+                    event2.set("featuredEvent",false);
+                }
+
+                if(req.body.hidden != undefined) {
+                    event2.set("hiddenEvent",true);
+                }
+                else {
+                    event2.set("hiddenEvent",false);
+                }
+                
+                if(req.body.newData != undefined) {
+                    event2.set("newData",true);
+                }
+                else {
+                    event2.set("newData",false);
+                }
+
+                if(req.body.prodData != undefined) {
+                    event2.set("prodData",true);
+                }
+                else {
+                    event2.set("prodData",false);
+                }
+                
+                if(req.body.eventAttendancePriorYear != undefined) {
+                    event2.set("eventAttendancePriorYear",parseInt(req.body.eventAttendancePriorYear));    
+                }
+
+                event2.save(null, {
+                    success: function(event) {
+                                // Execute any logic that should take place after the object is saved.
+                //                        alert('New object created with objectId: ' + gameScore.id);
+                //                console.log("not duplicate and insert into parse!!!!!!");
+                        console.log(event);
+                    },
+                    
+                    error: function(event, error) {
+                                // Execute any logic that should take place if the save fails.
+                                // error is a Parse.Error with an error code and message.
+                //                        alert('Failed to create new object, with error code: ' + error.message);
+                        console.log(error);
+                    }
+                });
+            }
+                        
+        },
+        error: function(event, error) {
+            // Execute any logic that should take place if the save fails.
+            // error is a Parse.Error with an error code and message.
+            //                        alert('Failed to create new object, with error code: ' + error.message);
+            console.log(error);
+        }
+    });
+            
+    res.end("<a href = '/'> back to main page</a>");
 })
+
+
+
+app.post('/edit', function (req, res) {
+    
+    
+    
+    
+//    console.log(req.body.newData == undefined);
+//    console.log(req.body.prodData == undefined);
+    
+
+//    
+//    var objectId = req.body.objectId;
+    
+//            if(!objectId.val()){
+//                alert("?????????");
+//                return;
+//            }
+        
+    initParse();
+    
+    console.log(req.body);
+        var event = Parse_dev.Object.extend("Event");
+
+        var query = new Parse_dev.Query(event);
+        query.get(req.body.objectId,{
+            success: function(event) {
+
+    //            console.log(event.get("eventName"));
+                event.set("artistAlleyApplicationStatus", parseInt(req.body.artistAlleyApplicationStatus));
+    //            
+    //            
+    //            console.log(event.get("eventName"));
+    //            
+                event.set("artistAlleyBoothPrice",Number(req.body.artistAlleyBoothPrice));
+    ////                event.set("artistAlleyContactInfo");
+                event.set("artistAlleySpotsAvailablility",Number(req.body.artistAlleySpotsAvailablility));
+    //                
+                if (req.body.artistsAlleyRegistrationUrl!="") {
+                    event.set("artistsAlleyRegistrationUrl",req.body.artistsAlleyRegistrationUrl);
+                }
+                else {
+                    event.set("artistsAlleyRegistrationUrl","N/A");
+                }
+    //
+                if (req.body.atDoorTicketPrices!="") {
+                    event.set("atDoorTicketPrices", req.body.atDoorTicketPrices);
+                }
+                else {
+                    event.set("atDoorTicketPrices","N/A");
+                }
+    //                
+    //                
+                event.set("eventAddress",req.body.eventAddress);
+    ////                event.set("eventAttendancePriorYear");
+    //                
+                event.set("eventCity",req.body.eventCity);
+                event.set("eventCountry",req.body.eventCountry);
+                event.set("eventDescription",req.body.eventDescription);
+    //                
+                event.set("eventHomeUrl",req.body.eventHomeUrl);
+    //                
+
+                if(Number(req.body.latitude)!=NaN && Number(req.body.longitude)!=NaN) {
+                    var point = new Parse_dev.GeoPoint({latitude: Number(req.body.latitude), longitude: Number(req.body.longitude)});
+
+
+                    event.set("eventLatLong",point);
+                    
+                }
+                event.set("eventName",req.body.eventName);
+    //            
+                if(req.body.eventStartDate!='') {
+                    console.log(new Date(req.body.eventStartDate));
+                    event.set("eventStartDate",new Date(req.body.eventStartDate));
+                }
+    //            
+                if(req.body.eventStartDate!='') {
+//                    console.log(req.body.eventStartDate + " UTC");
+
+                    event.set("eventStartDate",new Date(req.body.eventStartDate + " UTC"));
+                }
+                if(req.body.eventEndDate!='') {
+                    event.set("eventEndDate",new Date(req.body.eventEndDate+ " UTC")));
+                }
+                
+    //                
+    ////                event.set("eventStartTime");
+    //            
+                event.set("eventState",req.body.eventState);
+                if(req.body.eventStatus!='undefined')event.set("eventStatus",req.body.eventStatus);
+    //                
+    //
+                event.set("eventType",req.body.eventType);
+
+                event.set("eventVenue",req.body.eventVenue);
+                event.set("eventZip",req.body.eventZip);
+    //                
+                event.set("exhibitorApplicationStatus",Number(req.body.exhibitorApplicationStatus));
+                event.set("exhibitorBoothPrice",Number(req.body.exhibitorBoothPrice));
+    ////                event.set("exhibitorContactInfo","");
+    ////                event.set("exhibitorSpotsAvailable","");
+                event.set("exhibitorsBoothRegistrationUrl",req.body.exhibitorsBoothRegistrationUrl);
+                event.set("fanTicketRegistrationUrl",req.body.fanTicketRegistrationUrl);
+    //            
+
+    //            
+                event.set("notes",req.body.notes);
+                event.set("organizerContactUrl",req.body.organizerContactUrl);
+                event.set("presaleTicketPrices",req.body.presaleTicketPrices);
+                
+                event.set("eventCategory",req.body.eventCategory);
+
+                if(req.body.featuredEvent != undefined) {
+                    event.set("featuredEvent",true);
+                }
+                else {
+                    event.set("featuredEvent",false);
+                }
+
+                if(req.body.hidden != undefined) {
+                    event.set("hiddenEvent",true);
+                }
+                else {
+                    event.set("hiddenEvent",false);
+                }
+                if(req.body.newData != undefined) {
+                    event.set("newData",true);
+                }
+                else {
+                    event.set("newData",false);
+                }
+
+                if(req.body.prodData != undefined) {
+                    event.set("prodData",true);
+                }
+                else {
+                    event.set("prodData",false);
+                }
+                
+                if(req.body.eventAttendancePriorYear != undefined) {
+                    event.set("eventAttendancePriorYear",parseInt(req.body.eventAttendancePriorYear));  
+                    
+                    console.log(event.get("eventAttendancePriorYear"));
+                }
+                
+
+                event.save(null, {
+                    success: function(event) {
+
+                        console.log(event.get("eventZip"));
+                        
+                        
+                        if(event.get("prodData")) {
+
+                        changeParse();
+                            
+                        console.log("hhe");
+//                        var event2 = new Event();
+//                        event2 = event;
+                        var Event = Parse_dev.Object.extend("Event");
+                        var event2 = new Event();
+                        
+                        event2.set("artistAlleyApplicationStatus", parseInt(req.body.artistAlleyApplicationStatus));
+                        
+                        event2.set("artistAlleyBoothPrice",Number(req.body.artistAlleyBoothPrice));
+            ////                event.set("artistAlleyContactInfo");
+                        event2.set("artistAlleySpotsAvailablility",Number(req.body.artistAlleySpotsAvailablility));
+            //                
+                        if (req.body.artistsAlleyRegistrationUrl!="") {
+                            event2.set("artistsAlleyRegistrationUrl",req.body.artistsAlleyRegistrationUrl);
+                        }
+                        else {
+                            event2.set("artistsAlleyRegistrationUrl","N/A");
+                        }
+            //
+                        if (req.body.atDoorTicketPrices!="") {
+                            event2.set("atDoorTicketPrices", req.body.atDoorTicketPrices);
+                        }
+                        else {
+                            event2.set("atDoorTicketPrices","N/A");
+                        }
+            //                
+            //                
+                        event2.set("eventAddress",req.body.eventAddress);
+            ////                event.set("eventAttendancePriorYear");
+            //                
+                        event2.set("eventCity",req.body.eventCity);
+                        event2.set("eventCountry",req.body.eventCountry);
+                        event2.set("eventDescription",req.body.eventDescription);
+            //                
+                        event2.set("eventHomeUrl",req.body.eventHomeUrl);
+            //                
+
+                        if(Number(req.body.latitude)!=NaN && Number(req.body.longitude)!=NaN) {
+                            var point = new Parse_dev.GeoPoint({latitude: Number(req.body.latitude), longitude: Number(req.body.longitude)});
+
+
+                            event2.set("eventLatLong",point);
+
+                        }
+                        event2.set("eventName",req.body.eventName);
+            //            
+                        if(req.body.eventStartDate!='') {
+//                            console.log(new Date(req.body.eventStartDate + " UTC"));
+                            event2.set("eventStartDate",new Date(req.body.eventStartDate + " UTC"));
+                        }
+            //            
+                        if(req.body.eventEndDate!='') {
+                            event2.set("eventEndDate",new Date(req.body.eventEndDate + " UTC")));
+                        }
+            //                
+            ////                event.set("eventStartTime");
+            //            
+                        event2.set("eventState",req.body.eventState);
+                        if(req.body.eventStatus!='undefined')event2.set("eventStatus",req.body.eventStatus);
+            //                
+            //
+                        event2.set("eventType",req.body.eventType);
+
+                        event2.set("eventVenue",req.body.eventVenue);
+            //                
+                        event2.set("exhibitorApplicationStatus",Number(req.body.exhibitorApplicationStatus));
+                        event2.set("exhibitorBoothPrice",Number(req.body.exhibitorBoothPrice));
+            ////                event.set("exhibitorContactInfo","");
+            ////                event.set("exhibitorSpotsAvailable","");
+                        event2.set("exhibitorsBoothRegistrationUrl",req.body.exhibitorsBoothRegistrationUrl);
+                        event2.set("fanTicketRegistrationUrl",req.body.fanTicketRegistrationUrl);
+            //            
+
+            //            
+                        event2.set("notes",req.body.notes);
+                        event2.set("organizerContactUrl",req.body.organizerContactUrl);
+                        event2.set("presaleTicketPrices",req.body.presaleTicketPrices);
+                            
+                        event2.set("eventCategory",req.body.eventCategory);
+
+                        if(req.body.featuredEvent != undefined) {
+                            event2.set("featuredEvent",true);
+                        }
+                        else {
+                            event2.set("featuredEvent",false);
+                        }
+
+                        if(req.body.hidden != undefined) {
+                            event2.set("hiddenEvent",true);
+                        }
+                        else {
+                            event2.set("hiddenEvent",false);
+                        }
+                        if(req.body.newData != undefined) {
+                            event2.set("newData",true);
+                        }
+                        else {
+                            event2.set("newData",false);
+                        }
+
+
+                        if(req.body.prodData != undefined) {
+                            event2.set("prodData",true);
+                        }
+                        else {
+                            event2.set("prodData",false);
+                        }
+                            
+                        if(req.body.eventAttendancePriorYear != undefined) {
+                            event.set("eventAttendancePriorYear",parseInt(req.body.eventAttendancePriorYear));  
+//                            console.log(event.get("eventAttendancePriorYear"));
+                        }
+
+                        event2.save(null, {
+                            success: function(event) {
+                                // Execute any logic that should take place after the object is saved.
+                //                        alert('New object created with objectId: ' + gameScore.id);
+                //                console.log("not duplicate and insert into parse!!!!!!");
+                                console.log(event);
+                            },
+                            error: function(event, error) {
+                                // Execute any logic that should take place if the save fails.
+                                // error is a Parse.Error with an error code and message.
+                //                        alert('Failed to create new object, with error code: ' + error.message);
+                                console.log(error);
+                            }
+                        });
+                    }
+                        
+                        
+                        
+                        
+                        
+                    },
+                    error: function(event, error) {
+                            // Execute any logic that should take place if the save fails.
+                            // error is a Parse.Error with an error code and message.
+            //                        alert('Failed to create new object, with error code: ' + error.message);
+                        console.log(error);
+                    }
+                });
+                
+                
+                
+
+            },
+            error: function(object, error) {
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+//                res.end("no pages available!");
+                
+                console.log(error);
+            }
+        });
+    
+    
+    res.end("<a href = '/'> back to main page</a>");
+    
+})
+
+
+
 
 app.post('/file_upload', function (req, res) {
 

@@ -1,45 +1,99 @@
 <html>
 <head>
-<title>file upload</title>
+<title>data Staging</title>
 	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 
 	<script src= "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
-
-	
-
-	<script src="js/index.js"></script>
+    
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    
+    <script src="https://cdn.datatables.net/plug-ins/1.10.12/dataRender/datetime.js"></script>  
+    <base target="_blank" />
+<!--	<script src="js/index.js"></script>-->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"> 
 	<link rel="stylesheet" href="css/theme.css" type="text/css"/>
+    <script>
+        $(document).ready(function() {
+            var table = $('#table').DataTable( {
+                "ajax": "process_get",
+                "columns": [
+                    { "data": "eventName" },
+                    { "data": "eventVenue" },
+                    { "data": "eventCity" },
+                    { "data": "eventState" },
+                    { "data": "eventStartDate.iso" },
+                    { "data": "eventEndDate.iso" },
+                    { "data": "eventHomeUrl" },
+                    { "data": "eventStatus" },
+                    { "data": "artistAlleyApplicationStatus" },
+                    { "data": "exhibitorApplicationStatus" },
+                    { "data": "notes" },
+                    { "data": "eventType" }, 
+                    { "data": "newData" }, 
+                    { "data": "prodData" }, 
+                    { "data": "updatedAt" }, 
+                    { "data": "eventCategory"},
+//                    {"defaultContent": "<button class = 'show'>Show</button>"},
+                    {"defaultContent": "<button class = 'edit'>Edit</button>"},
+                ]
+            } );
+        
+            $('#table tbody').on( 'click', 'button.show', function () {
+                var data = table.row( $(this).parents('tr') ).data();
+//                var array = JSON.stringify(data);
+                
+//                console.log(data);
+                
+                var url = "/show?data=" + data.objectId;
+                window.location.href = url;
+                
+            } );
+            
+            $('#table tbody').on( 'click', 'button.edit', function () {
+                var data = table.row( $(this).parents('tr') ).data();
+//                console.log("edit");
+//                console.log(data.eventStartDate.iso);
+//                console.log(data.eventEndDate.iso);
+                
+                var url = "/edit?data=" + data.objectId;
+                window.location.href = url;
+            } );
+        } );
+    
+    </script>
 
 </head>
 <body>
+    <p style = "font-size:40px">Listing Events</p>
+    <a href="/add" style="font-size:large">add new event</a>
+    <table id="table" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Venue</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Startdate</th>
+                <th>Enddate</th>
+                <th>Homeurl</th>
+                <th>Status</th>
+                <th>AA App Status</th>
+                <th>EX App Status</th>
+                <th>Event Notes</th>
+                <th>Event Type</th>
+                <th>New Data</th>
+                <th>Production Data</th>
+                <th>updatedAt</th>
+                <th>eventCategory</th>
+<!--                <th>Actions</th>-->
+                <th>Actions</th>
+            </tr>
+        </thead>
+    </table>
+    <br>
+    
 
-	<form id = "mainform" action="/file_upload" method="post" enctype="multipart/form-data" onsubmit="javascript:return false">
-		<div class="row">
- 			<div class="col-md-3"></div>
-  			<div class="col-md-6"><center><p class = "capital">Concon Crawling Data Management</p></center></div>
-  			<div class="col-md-3"></div>
-		</div>
-		<br> 
-		<br> 
-		<div class="row">
- 			<div class="col-md-3"> Upload crawling csv File <font color="red">*</font></div>
-  			<div class="col-md-6"> 
-  				<input type="file" required accept = "text/csv" name="image" size="50" class="btn btn-primary btn-sm" style = "float: left"/>
-  				<button type="submit" value="upload" class="btn btn-success btn-sm" style = "float: left"> Get analysis result</button>
-  		    </div>
-  		    <div class="col-md-3">Powered By: <img src = "img/aws.png" style = "width: 100px; height: 40px;"></div>
-		</div>
 
-		<br> 
-
-
-		<div class="row">
-			<div class="col-md-12" align = "center"> Contact <a href = "mailto:qiuyangy@usc.edu"> qiuyangy@usc.edu</a> </div>
-		</div>
-
-		<br >
-
-	</form>
 </body>
 </html>

@@ -1,5 +1,6 @@
 //<script src="//www.parsecdn.com/js/parse-1.6.14.min.js"></script>
-Parse.initialize("GGTNZ2qrKXClObC4qotCEIBCFEpytaSscYJ7yzcG", "FEmiLsJNjftJ2kMob61vequskh6COimJvPSmYqZo");
+Parse.initialize("24t24lAA1VrzzlpqqB58ZMowWQTBbIG7v2O5lsPW");
+Parse.serverURL = "http://concon-admin-data-dev.herokuapp.com/parse";
 var global;
 function printTerms(id, obj) {
 
