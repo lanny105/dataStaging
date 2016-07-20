@@ -220,7 +220,7 @@ app.get('/edit', function (req, res) {
 })
 
 
-app.post('/add', function (req, res) {
+function save(req, callback) {
     initParse();
     
     console.log(req.body);
@@ -233,6 +233,11 @@ app.post('/add', function (req, res) {
     event.set("artistAlleyBoothPrice",Number(req.body.artistAlleyBoothPrice));
     
     event.set("artistAlleySpotsAvailablility",Number(req.body.artistAlleySpotsAvailablility));
+    
+    if (req.body.exhibitorSpotsAvailablility != undefined) {
+        event.set("exhibitorSpotsAvailable",Number(req.body.exhibitorSpotsAvailablility));
+    }
+    
              
     if (req.body.artistsAlleyRegistrationUrl!="") {
         event.set("artistsAlleyRegistrationUrl",req.body.artistsAlleyRegistrationUrl);
@@ -247,6 +252,10 @@ app.post('/add', function (req, res) {
     else {
         event.set("atDoorTicketPrices","N/A");
     }
+    
+    event.set("artistAlleyContactInfo",req.body.artistAlleyContactInfo);
+    event.set("exhibitorContactInfo", req.body.exhibitorContactInfo);
+    
             
     event.set("eventAddress",req.body.eventAddress);
          
@@ -266,11 +275,21 @@ app.post('/add', function (req, res) {
     event.set("eventName",req.body.eventName);
                 
     if(req.body.eventStartDate!='') {
-        event.set("eventStartDate",new Date(req.body.eventStartDate) +" UTC");
+        event.set("eventStartDate",new Date(req.body.eventStartDate +" UTC"));
     }
       
     if(req.body.eventEndDate!='') {
         event.set("eventEndDate",new Date(req.body.eventEndDate + " UTC"));
+    }
+    
+    if(req.body.boothOpenEnrollmentDay!='') {
+//                    console.log(req.body.eventStartDate + " UTC");
+
+        event.set("boothOpenEnrollmentDay", req.body.boothOpenEnrollmentDay + " UTC");
+    }
+                
+    if(req.body.boothEnrollmentEndDay!='') {
+        event.set("boothEnrollmentEndDay",req.body.boothEnrollmentEndDay+ " UTC");
     }
 
     event.set("eventState",req.body.eventState);
@@ -329,12 +348,14 @@ app.post('/add', function (req, res) {
                 
     event.save(null, {
         success: function(event) {
+            
+            callback("event add successfully:" + event.get('eventName'));
                                     
             if(event.get("prodData")) {
 
                 changeParse();
                 
-                console.log("hhe");
+//                console.log("hhe");
 
                 var Event = Parse_dev.Object.extend("Event");
                 var event2 = new Event();
@@ -343,6 +364,10 @@ app.post('/add', function (req, res) {
                         
                 event2.set("artistAlleyBoothPrice",Number(req.body.artistAlleyBoothPrice));
                 event2.set("artistAlleySpotsAvailablility",Number(req.body.artistAlleySpotsAvailablility));
+                
+                if (req.body.exhibitorSpotsAvailablility != undefined) {
+                    event2.set("exhibitorSpotsAvailable",Number(req.body.exhibitorSpotsAvailablility));
+                }
                            
                 if (req.body.artistsAlleyRegistrationUrl!="") {
                     event2.set("artistsAlleyRegistrationUrl",req.body.artistsAlleyRegistrationUrl);
@@ -364,7 +389,12 @@ app.post('/add', function (req, res) {
                 event2.set("eventCountry",req.body.eventCountry);
                 event2.set("eventDescription",req.body.eventDescription);
                             
-                event2.set("eventHomeUrl",req.body.eventHomeUrl);             
+                event2.set("eventHomeUrl",req.body.eventHomeUrl);      
+                
+                event2.set("artistAlleyContactInfo",req.body.artistAlleyContactInfo);
+                event2.set("exhibitorContactInfo", req.body.exhibitorContactInfo);
+                
+                
 
                 if(Number(req.body.latitude)!=NaN && Number(req.body.longitude)!=NaN) {
                     var point = new Parse_dev.GeoPoint({latitude: Number(req.body.latitude), longitude: Number(req.body.longitude)});
@@ -382,6 +412,15 @@ app.post('/add', function (req, res) {
         
                 if(req.body.eventEndDate!='') {
                     event2.set("eventEndDate",new Date(req.body.eventEndDate + " UTC"));
+                }
+                
+                if(req.body.boothOpenEnrollmentDay!='') {
+            //                    console.log(req.body.eventStartDate + " UTC");
+                    event2.set("boothOpenEnrollmentDay",req.body.boothOpenEnrollmentDay + " UTC");
+                }
+
+                if(req.body.boothEnrollmentEndDay!='') {
+                    event2.set("boothEnrollmentEndDay",req.body.boothEnrollmentEndDay+ " UTC");
                 }
         
                 event2.set("eventState",req.body.eventState);
@@ -442,6 +481,7 @@ app.post('/add', function (req, res) {
                 //                        alert('New object created with objectId: ' + gameScore.id);
                 //                console.log("not duplicate and insert into parse!!!!!!");
                         console.log(event);
+                        callback("event push successfully:" + event.get('eventName'));
                     },
                     
                     error: function(event, error) {
@@ -449,6 +489,7 @@ app.post('/add', function (req, res) {
                                 // error is a Parse.Error with an error code and message.
                 //                        alert('Failed to create new object, with error code: ' + error.message);
                         console.log(error);
+                        callback("event push failure:"+error);
                     }
                 });
             }
@@ -458,32 +499,14 @@ app.post('/add', function (req, res) {
             // Execute any logic that should take place if the save fails.
             // error is a Parse.Error with an error code and message.
             //                        alert('Failed to create new object, with error code: ' + error.message);
-            console.log(error);
+            callback("event add failure:"+error);
+//            console.log(error);
         }
     });
-            
-    res.end("<a href = '/'> back to main page</a>");
-})
+}
 
 
-
-app.post('/edit', function (req, res) {
-    
-    
-    
-    
-//    console.log(req.body.newData == undefined);
-//    console.log(req.body.prodData == undefined);
-    
-
-//    
-//    var objectId = req.body.objectId;
-    
-//            if(!objectId.val()){
-//                alert("?????????");
-//                return;
-//            }
-        
+function edit(req, callback) {
     initParse();
     
     console.log(req.body);
@@ -503,6 +526,10 @@ app.post('/edit', function (req, res) {
     ////                event.set("artistAlleyContactInfo");
                 event.set("artistAlleySpotsAvailablility",Number(req.body.artistAlleySpotsAvailablility));
     //                
+                if (req.body.exhibitorSpotsAvailablility != undefined) {
+                    event.set("exhibitorSpotsAvailable",Number(req.body.exhibitorSpotsAvailablility));
+                }
+                
                 if (req.body.artistsAlleyRegistrationUrl!="") {
                     event.set("artistsAlleyRegistrationUrl",req.body.artistsAlleyRegistrationUrl);
                 }
@@ -526,6 +553,8 @@ app.post('/edit', function (req, res) {
                 event.set("eventDescription",req.body.eventDescription);
     //                
                 event.set("eventHomeUrl",req.body.eventHomeUrl);
+                event.set("artistAlleyContactInfo",req.body.artistAlleyContactInfo);
+                event.set("exhibitorContactInfo", req.body.exhibitorContactInfo);
     //                
 
                 if(Number(req.body.latitude)!=NaN && Number(req.body.longitude)!=NaN) {
@@ -542,13 +571,23 @@ app.post('/edit', function (req, res) {
                     event.set("eventStartDate",new Date(req.body.eventStartDate));
                 }
     //            
+                if(req.body.boothOpenEnrollmentDay!='') {
+//                    console.log(req.body.eventStartDate + " UTC");
+
+                    event.set("boothOpenEnrollmentDay",req.body.boothOpenEnrollmentDay + " UTC");
+                }
+                
+                if(req.body.boothEnrollmentEndDay!='') {
+                    event.set("boothEnrollmentEndDay",req.body.boothEnrollmentEndDay+ " UTC");
+                }
+                
                 if(req.body.eventStartDate!='') {
 //                    console.log(req.body.eventStartDate + " UTC");
 
                     event.set("eventStartDate",new Date(req.body.eventStartDate + " UTC"));
                 }
                 if(req.body.eventEndDate!='') {
-                    event.set("eventEndDate",new Date(req.body.eventEndDate+ " UTC")));
+                    event.set("eventEndDate",new Date(req.body.eventEndDate+ " UTC"));
                 }
                 
     //                
@@ -615,7 +654,8 @@ app.post('/edit', function (req, res) {
                 event.save(null, {
                     success: function(event) {
 
-                        console.log(event.get("eventZip"));
+//                        console.log(event.get("eventZip"));
+                        callback("event edit successfully:" + event.get('eventName'));
                         
                         
                         if(event.get("prodData")) {
@@ -634,6 +674,11 @@ app.post('/edit', function (req, res) {
             ////                event.set("artistAlleyContactInfo");
                         event2.set("artistAlleySpotsAvailablility",Number(req.body.artistAlleySpotsAvailablility));
             //                
+                            
+                        if (req.body.exhibitorSpotsAvailablility != undefined) {
+                            event2.set("exhibitorSpotsAvailable",Number(req.body.exhibitorSpotsAvailablility));
+                        }
+                            
                         if (req.body.artistsAlleyRegistrationUrl!="") {
                             event2.set("artistsAlleyRegistrationUrl",req.body.artistsAlleyRegistrationUrl);
                         }
@@ -658,6 +703,8 @@ app.post('/edit', function (req, res) {
             //                
                         event2.set("eventHomeUrl",req.body.eventHomeUrl);
             //                
+                        event2.set("artistAlleyContactInfo",req.body.artistAlleyContactInfo);
+                        event2.set("exhibitorContactInfo", req.body.exhibitorContactInfo);
 
                         if(Number(req.body.latitude)!=NaN && Number(req.body.longitude)!=NaN) {
                             var point = new Parse_dev.GeoPoint({latitude: Number(req.body.latitude), longitude: Number(req.body.longitude)});
@@ -674,8 +721,19 @@ app.post('/edit', function (req, res) {
                         }
             //            
                         if(req.body.eventEndDate!='') {
-                            event2.set("eventEndDate",new Date(req.body.eventEndDate + " UTC")));
+                            event2.set("eventEndDate",new Date(req.body.eventEndDate + " UTC"));
                         }
+                        
+                        if(req.body.boothOpenEnrollmentDay!='') {
+        //                    console.log(req.body.eventStartDate + " UTC");
+
+                            event2.set("boothOpenEnrollmentDay",req.body.boothOpenEnrollmentDay + " UTC");
+                        }
+
+                        if(req.body.boothEnrollmentEndDay!='') {
+                            event2.set("boothEnrollmentEndDay",req.body.boothEnrollmentEndDay+ " UTC");
+                        }
+                            
             //                
             ////                event.set("eventStartTime");
             //            
@@ -731,7 +789,7 @@ app.post('/edit', function (req, res) {
                         }
                             
                         if(req.body.eventAttendancePriorYear != undefined) {
-                            event.set("eventAttendancePriorYear",parseInt(req.body.eventAttendancePriorYear));  
+                            event2.set("eventAttendancePriorYear",parseInt(req.body.eventAttendancePriorYear));  
 //                            console.log(event.get("eventAttendancePriorYear"));
                         }
 
@@ -740,12 +798,14 @@ app.post('/edit', function (req, res) {
                                 // Execute any logic that should take place after the object is saved.
                 //                        alert('New object created with objectId: ' + gameScore.id);
                 //                console.log("not duplicate and insert into parse!!!!!!");
+                                callback("event push successfully:" + event.get('eventName'));
                                 console.log(event);
                             },
                             error: function(event, error) {
                                 // Execute any logic that should take place if the save fails.
                                 // error is a Parse.Error with an error code and message.
                 //                        alert('Failed to create new object, with error code: ' + error.message);
+                                callback("event push failure:" + error);
                                 console.log(error);
                             }
                         });
@@ -760,6 +820,7 @@ app.post('/edit', function (req, res) {
                             // Execute any logic that should take place if the save fails.
                             // error is a Parse.Error with an error code and message.
             //                        alert('Failed to create new object, with error code: ' + error.message);
+                        callback("event edit failure:" + error);
                         console.log(error);
                     }
                 });
@@ -771,14 +832,33 @@ app.post('/edit', function (req, res) {
             error: function(object, error) {
             // The object was not retrieved successfully.
             // error is a Parse.Error with an error code and message.
-//                res.end("no pages available!");
+                res.end("no pages available!");
                 
                 console.log(error);
             }
         });
+}
+
+
+
+
+app.post('/add', function (req, res) {
     
+    save(req, function(data){
+//        alert(data);
+        res.end("<script>alert('" + data + "');</script><a href = '/'> Back to main page </a>");
+    });
     
-    res.end("<a href = '/'> back to main page</a>");
+})
+
+
+
+app.post('/edit', function (req, res) {
+    
+    edit(req, function(data){
+
+        res.end("<script>alert('" + data + "');</script><a href = '/'> Back to main page </a>");
+    });
     
 })
 
