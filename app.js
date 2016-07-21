@@ -141,7 +141,9 @@ app.get('/', function (req, res) {
 
 app.get('/add', function (req, res) {
     initParse();
-    res.render("add.html",{});
+    if(req.query.msg == "add_failure") res.render("add.html", {msg: "add_failure"});
+    else
+    res.render("add.html",{msg: ""});
 })
 
 
@@ -157,14 +159,18 @@ app.get('/process_get', function (req, res) {
 
 app.get('/show', function (req, res) {
     
+//        initParse();
+    
     var Event = Parse_dev.Object.extend("Event");
     var query = new Parse_dev.Query(Event);
     query.get(req.query.data, {
       success: function(Event) {
         // The object was retrieved successfully.
 //          console.log(Event.get("eventName"));
-          
-          res.render("show.html", { event: Event });
+          if(req.query.msg == undefined) res.render("show.html", { event: Event , moment: moment, msg: ""});
+          else {
+              res.render("show.html", { event: Event , moment: moment, msg: req.query.msg});
+          }
       },
       error: function(object, error) {
         // The object was not retrieved successfully.
@@ -344,7 +350,9 @@ function save(req, callback) {
     event.save(null, {
         success: function(event) {
             
-            callback("event add successfully:" + event.get('eventName'));
+//            callback("event add successfully:" + event.get('eventName'));
+            
+            callback('show?data='+ event.id + '&msg=add');
                                     
             if(event.get("prodData")) {
 
@@ -503,7 +511,8 @@ function save(req, callback) {
             // Execute any logic that should take place if the save fails.
             // error is a Parse.Error with an error code and message.
             //                        alert('Failed to create new object, with error code: ' + error.message);
-            callback("event add failure:"+error);
+//            callback("event add failure:"+error);
+            callback('add?msg=add_failure');
 //            console.log(error);
         }
     });
@@ -676,7 +685,7 @@ function edit(req, callback) {
                     success: function(event) {
 
 //                        console.log(event.get("eventZip"));
-                        callback("event edit successfully:" + event.get('eventName'));
+                        callback('show?data='+ event.id + '&msg=edit');
                         
                         
                         if(event.get("prodData")) {
@@ -850,7 +859,8 @@ function edit(req, callback) {
                             // Execute any logic that should take place if the save fails.
                             // error is a Parse.Error with an error code and message.
             //                        alert('Failed to create new object, with error code: ' + error.message);
-                        callback("event edit failure:" + error);
+                        callback('show?data='+ event.id + '&msg=edit_failure');
+//                        callback("event edit failure:" + error);
                         console.log(error);
                     }
                 });
@@ -877,7 +887,7 @@ function destroy(req, callback) {
     var event = Parse_dev.Object.extend("Event");
 
     var query = new Parse_dev.Query(event);
-    query.get(req.body.objectId,{
+    query.get(req.body.id,{
         success: function(event) {
             event.destroy({
                 success: function(myObject) {
@@ -910,7 +920,8 @@ app.post('/add', function (req, res) {
     
     save(req, function(data){
 //        alert(data);
-        res.end("<script>alert('" + data + "');</script><a href = '/'> Back to main page </a>");
+        res.redirect(data);
+//        res.end("<script>alert('" + data + "');</script><a href = '/'> Back to main page </a>");
     });
     
 })
@@ -930,8 +941,8 @@ app.post('/delete', function(req, res) {
 app.post('/edit', function (req, res) {
     
     edit(req, function(data){
-
-        res.end("<script>alert('" + data + "');</script><a href = '/'> Back to main page </a>");
+        res.redirect(data);
+//        res.send("<script>alert('" + data + "');</script><a href = '/'> Back to main page </a>");
     });
     
 })

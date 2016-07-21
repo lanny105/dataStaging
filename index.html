@@ -8,7 +8,7 @@
     <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
     
     <script src="https://cdn.datatables.net/plug-ins/1.10.12/dataRender/datetime.js"></script>  
-    <base target="_blank" />
+<!--    <base target="_blank" />-->
 <!--	<script src="js/index.js"></script>-->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"> 
@@ -65,7 +65,7 @@
                     { "data": "ConStartYear" ,"defaultContent": "<i>Not set</i>"}, 
                     { "data": "AgeofCon" ,"defaultContent": "<i>Not set</i>"}, 
                     { "data": "ReadyforProd", "defaultContent": "<i>Not set</i>"},
-                    
+                    { "defaultContent": "<button class = 'show'>Show</button>"},
                     { "defaultContent": "<button class = 'edit'>Edit</button>"},
                     { 
                       "render":  function ( data, type, row) {
@@ -80,6 +80,11 @@
             } );
         
             $('#table tbody').on( 'click', 'button.delete', function () {
+                
+                if (!confirm('Are you sure you want to delete this event from the database?')) {
+                    return;
+                }
+                
                 var data = table.row( $(this).parents('tr') ).data();
 //                var array = JSON.stringify(data);
                 table.row( $(this).parents('tr') ).remove().draw();
@@ -95,13 +100,13 @@
                         
                         console.log(data);
                         alert("successfully deleted!");
-                        window.location.href = "/";
+//                        window.location.href = "/";
                         
                     },
                     error: function (jqXHR, textStatus, errorThrown)
                     {
                         alert("delete fail:" + errorThrown);
-                        window.location.href = "/";
+//                        window.location.href = "/";
                     }
                 });
                 
@@ -116,12 +121,41 @@
                 var url = "/edit?data=" + data.objectId;
                 window.location.href = url;
             } );
+            
+            $('#table tbody').on( 'click', 'button.show', function () {
+                var data = table.row( $(this).parents('tr') ).data();
+//                console.log("edit");
+//                console.log(data.eventStartDate.iso);
+//                console.log(data.eventEndDate.iso);
+                
+                var url = "/show?data=" + data.objectId;
+                window.location.href = url;
+            } );
         } );
     
     </script>
 
 </head>
 <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Data Staging</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Home</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    <div style="margin-top:60px"> 
     <p style = "font-size:40px">Listing Events</p>
     <a href="/add" style="font-size:large">add new event</a>
 <!--    <form method="post" action="/edit" > -->
@@ -147,6 +181,7 @@
                     <th>Con Start Year</th>
                     <th>Age of Con</th>
                     <th>Ready for Prod</th>
+                    <th>Actions</th>                    
                     <th>Actions</th>
                     <th>Actions</th>
                 </tr>
@@ -156,6 +191,8 @@
     
     
 <!--    </form>-->
+    </div>
+    
     
 
 

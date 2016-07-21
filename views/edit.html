@@ -83,6 +83,25 @@
 
 </head>
 <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Data Staging</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Home</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    <div style="margin-top:80px"> 
     <form method="post" action="/edit" style = "width:60%; margin-left:20%" onsubmit="return validateForm()"> 
         <p>
           <strong>Event Name:<font color="red">*</font></strong>
@@ -349,8 +368,8 @@
           <select class="form-control" id="eventType" name = "eventType"> 
             <option value="Anime">Anime</option>
             <option value="Comic">Comic</option>
-            <option value="Comic">Game</option>
-            <option value="Comic">Sci-Fi</option>
+            <option value="Game">Game</option>
+            <option value="Sci-Fi">Sci-Fi</option>
             <option value="Other">Other</option>
             <option value="Multiple Types">Multiple Types</option>
           </select>
@@ -415,11 +434,12 @@
 <!--        <input type="submit" class="btn btn-info" name = "action" value="Push" onclick="return validate_activity();" >-->
         
 <!--        <button class="btn btn-default" onclick="window.location='/'"> back</button>--> 
-        <a href="/">Back</a>
+        <a href="/show?data=<%- event.id %>">Show</a>        
+<!--        <a href="/">Back</a>-->
     
     </form>
     
-    
+    </div>
         
     
 </body>
