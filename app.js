@@ -145,31 +145,10 @@ app.get('/add', function (req, res) {
 })
 
 
-//
-//app.get('/result', function (req, res) {
-//
-//    if (req.query.Filename==null) {
-//        console.log('filename missing!');
-//        res.render("result.html", {name:""});
-//        return;
-//    };
-//
-//    res.render("result.html", { name: req.query.Filename });
-//})
-
-
-
 app.get('/process_get', function (req, res) {
     
     getParse(function(data){
         console.log({"data":data});
-        
-//        for(var i = 0; i < data.length; i++) {
-//            console.log(data[i].get('eventName'));
-//            console.log(data[i].get('eventStartDate'));
-//            console.log(data[i].get('eventCity'));
-//        }
-    
         
         res.json({"data":data});
     });
@@ -236,6 +215,14 @@ function save(req, callback) {
     
     if (req.body.exhibitorSpotsAvailablility != undefined) {
         event.set("exhibitorSpotsAvailable",Number(req.body.exhibitorSpotsAvailablility));
+    }
+    
+    if (req.body.ConStartYear != undefined) {
+        event.set("ConStartYear",Number(req.body.ConStartYear));
+    }
+    
+    if (req.body.AgeofCon != undefined) {
+        event.set("AgeofCon",Number(req.body.AgeofCon));
     }
     
              
@@ -332,14 +319,22 @@ function save(req, callback) {
     else {
         event.set("newData",false);
     }
-
-
+    
     if(req.body.prodData != undefined) {
         event.set("prodData",true);
     }
     else {
         event.set("prodData",false);
     }
+    
+    
+    if(req.body.ReadyforProd != undefined) {
+        event.set("ReadyforProd",true);
+    }
+    else {
+        event.set("ReadyforProd",false);
+    }
+    
     
     if(req.body.eventAttendancePriorYear != undefined) {
         event.set("eventAttendancePriorYear",parseInt(req.body.eventAttendancePriorYear));  
@@ -364,6 +359,15 @@ function save(req, callback) {
                         
                 event2.set("artistAlleyBoothPrice",Number(req.body.artistAlleyBoothPrice));
                 event2.set("artistAlleySpotsAvailablility",Number(req.body.artistAlleySpotsAvailablility));
+                
+                if (req.body.ConStartYear != undefined) {
+                    event2.set("ConStartYear",Number(req.body.ConStartYear));
+                }
+
+                if (req.body.AgeofCon != undefined) {
+                    event2.set("AgeofCon",Number(req.body.AgeofCon));
+                }
+                
                 
                 if (req.body.exhibitorSpotsAvailablility != undefined) {
                     event2.set("exhibitorSpotsAvailable",Number(req.body.exhibitorSpotsAvailablility));
@@ -526,6 +530,16 @@ function edit(req, callback) {
     ////                event.set("artistAlleyContactInfo");
                 event.set("artistAlleySpotsAvailablility",Number(req.body.artistAlleySpotsAvailablility));
     //                
+                
+                
+                if (req.body.ConStartYear != undefined) {
+                    event.set("ConStartYear",Number(req.body.ConStartYear));
+                }
+
+                if (req.body.AgeofCon != undefined) {
+                    event.set("AgeofCon",Number(req.body.AgeofCon));
+                }
+                
                 if (req.body.exhibitorSpotsAvailablility != undefined) {
                     event.set("exhibitorSpotsAvailable",Number(req.body.exhibitorSpotsAvailablility));
                 }
@@ -644,6 +658,13 @@ function edit(req, callback) {
                     event.set("prodData",false);
                 }
                 
+                if(req.body.ReadyforProd != undefined) {
+                    event.set("ReadyforProd",true);
+                }
+                else {
+                    event.set("ReadyforProd",false);
+                }
+                
                 if(req.body.eventAttendancePriorYear != undefined) {
                     event.set("eventAttendancePriorYear",parseInt(req.body.eventAttendancePriorYear));  
                     
@@ -674,6 +695,15 @@ function edit(req, callback) {
             ////                event.set("artistAlleyContactInfo");
                         event2.set("artistAlleySpotsAvailablility",Number(req.body.artistAlleySpotsAvailablility));
             //                
+                            
+                        if (req.body.ConStartYear != undefined) {
+                            event2.set("ConStartYear",Number(req.body.ConStartYear));
+                        }
+
+                        if (req.body.AgeofCon != undefined) {
+                            event2.set("AgeofCon",Number(req.body.AgeofCon));
+                        }
+                            
                             
                         if (req.body.exhibitorSpotsAvailablility != undefined) {
                             event2.set("exhibitorSpotsAvailable",Number(req.body.exhibitorSpotsAvailablility));
@@ -839,7 +869,41 @@ function edit(req, callback) {
         });
 }
 
+function destroy(req, callback) {
+    initParse();
+    
+    console.log(req.body);
+    
+    var event = Parse_dev.Object.extend("Event");
 
+    var query = new Parse_dev.Query(event);
+    query.get(req.body.objectId,{
+        success: function(event) {
+            event.destroy({
+                success: function(myObject) {
+                    // The object was deleted from the Parse Cloud.
+                    callback(JSON.stringify(myObject));
+                },
+                error: function(myObject, error) {
+                    // The delete failed.
+                    // error is a Parse.Error with an error code and message.
+                    callback(JSON.stringify({"err":error}));
+                }
+            });
+            
+        },
+        
+        error: function(object, error) {
+            // The object was not retrieved successfully.
+            // error is a Parse.Error with an error code and message.
+            callback(JSON.stringify({"err":error}));
+//            res.end("no pages available!");
+                
+            console.log(error);
+        }
+    });
+}
+            
 
 
 app.post('/add', function (req, res) {
@@ -848,6 +912,16 @@ app.post('/add', function (req, res) {
 //        alert(data);
         res.end("<script>alert('" + data + "');</script><a href = '/'> Back to main page </a>");
     });
+    
+})
+
+app.post('/delete', function(req, res) {
+    
+    destroy(req, function(data) {
+        res.send(data);
+    })
+    
+//    res.send("success!");
     
 })
 

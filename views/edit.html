@@ -41,8 +41,7 @@
         }
         
         $(function() {
-            $('#datetimepicker1').datetimepicker({
-            });
+            $('#datetimepicker1').datetimepicker();
             var picker = $('#datetimepicker1').data('datetimepicker');
             var dt = new Date('<%- event.get("eventStartDate") %>');
             console.log('<%- event.get("eventStartDate") %>');
@@ -380,6 +379,16 @@
           <strong>Event Attendance Prior Year (number only):<font color="red">*</font></strong>
           <input type="number" class="form-control" name = "eventAttendancePriorYear" value='<%- event.get("eventAttendancePriorYear") %>' required>
         </p>
+    
+        <p>
+          <strong>Con Start Year (number only):</strong>
+          <input type="number" class="form-control" name = "ConStartYear" value='<%- event.get("ConStartYear") %>'>
+        </p>
+
+        <p>
+          <strong>Age of Con (number only):</strong>
+          <input type="number" class="form-control" name = "AgeofCon" value='<%- event.get("AgeofCon") %>'>
+        </p>
             
         
         <p>
@@ -393,6 +402,12 @@
             <% if ( event.get("prodData")) {%> <script type='text/javascript'> $('.prod').prop('checked', true);
             $('.prod').prop("disabled", true);</script> <%} %>
         <p>
+            
+        <p>
+          <strong>Ready for Prod?</strong>
+            <input type="checkbox" class = "ReadyforProd" name = "ReadyforProd"> <br>
+            <% if ( event.get("ReadyforProd")) {%> <script type='text/javascript'> $('.ReadyforProd').prop('checked', true);</script> <%} %>
+        <p>  
         
         <input type="hidden" class="form-control" name = "objectId" value='<%- event.id %>'>
             

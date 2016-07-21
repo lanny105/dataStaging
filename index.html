@@ -16,14 +16,34 @@
     <script>
         $(document).ready(function() {
             var table = $('#table').DataTable( {
+                "lengthMenu": [ 100, 10, 25, 50 ],
                 "ajax": "process_get",
                 "columns": [
                     { "data": "eventName", "defaultContent": "<i>Not set</i>" },
                     { "data": "eventVenue", "defaultContent": "<i>Not set</i>" },
                     { "data": "eventCity" ,"defaultContent": "<i>Not set</i>"},
                     { "data": "eventState" ,"defaultContent": "<i>Not set</i>"},
-                    { "data": "eventStartDate.iso","defaultContent": "<i>Not set</i>" },
-                    { "data": "eventEndDate.iso" ,"defaultContent": "<i>Not set</i>"},
+                    { "data": "eventStartDate.iso",
+                      "render":  function ( data, type, row) {
+
+                          
+                          if(data == undefined) {
+                              return "<i>Not set</i>";
+                          }
+                          return moment.utc(data).format('MM/DD/YYYY');
+                      }
+                    },
+                    { "data": "eventEndDate.iso" ,
+                      "render": function ( data, type, row) {
+                          if(data == undefined) {
+                              if(row.eventStartDate == undefined) return "<i>Not set</i>";
+//                              console.log(row.updatedAt);
+//                              console.log(row.eventStartDate.iso);
+                              return moment.utc(row.eventStartDate.iso).format('MM/DD/YYYY');
+                          }
+                          return moment.utc(data).format('MM/DD/YYYY');
+                      }
+                    },
                     { "data": "eventHomeUrl" ,"defaultContent": "<i>Not set</i>"},
                     { "data": "eventStatus" ,"defaultContent": "<i>Not set</i>"},
                     { "data": "artistAlleyApplicationStatus" ,"defaultContent": "<i>Not set</i>"},
@@ -32,21 +52,58 @@
                     { "data": "eventType" ,"defaultContent": "<i>Not set</i>"}, 
                     { "data": "newData" ,"defaultContent": "<i>Not set</i>"}, 
                     { "data": "prodData" ,"defaultContent": "<i>Not set</i>"}, 
-                    { "data": "updatedAt" ,"defaultContent": "<i>Not set</i>"}, 
+                    { "data": "updatedAt" ,
+                      "render":  function ( data, type, row) {
+                          if(data == undefined) {
+                              return "<i>Not set</i>";
+                          }
+                          return moment(data).format('MM/DD/YYYY h:mm:ss a');
+                      }
+                    }, 
                     { "data": "eventCategory","defaultContent": "<i>Not set</i>"},
 //                    {"defaultContent": "<button class = 'show'>Show</button>"},
-                    {"defaultContent": "<button class = 'edit'>Edit</button>"},
-                ]
+                    { "data": "ConStartYear" ,"defaultContent": "<i>Not set</i>"}, 
+                    { "data": "AgeofCon" ,"defaultContent": "<i>Not set</i>"}, 
+                    { "data": "ReadyforProd", "defaultContent": "<i>Not set</i>"},
+                    
+                    { "defaultContent": "<button class = 'edit'>Edit</button>"},
+                    { 
+                      "render":  function ( data, type, row) {
+                          if(row.newData == true && row.prodData == false) {
+                              return "<button class = 'delete'>Delete</button>";
+                          }
+                          return "";
+                      }
+                    }
+                ],
+                
             } );
         
-            $('#table tbody').on( 'click', 'button.show', function () {
+            $('#table tbody').on( 'click', 'button.delete', function () {
                 var data = table.row( $(this).parents('tr') ).data();
 //                var array = JSON.stringify(data);
+                table.row( $(this).parents('tr') ).remove().draw();
                 
 //                console.log(data);
-                
-                var url = "/show?data=" + data.objectId;
-                window.location.href = url;
+                $.ajax({
+                    url : "/delete",
+                    type: "POST",
+                    data : {id: data.objectId},
+                    success: function(data, textStatus, jqXHR)
+                    {
+                        //data - response from server
+                        
+                        console.log(data);
+                        alert("successfully deleted!");
+                        window.location.href = "/";
+                        
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        alert("delete fail:" + errorThrown);
+                        window.location.href = "/";
+                    }
+                });
                 
             } );
             
@@ -67,31 +124,38 @@
 <body>
     <p style = "font-size:40px">Listing Events</p>
     <a href="/add" style="font-size:large">add new event</a>
-    <table id="table" class="display" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Venue</th>
-                <th>City</th>
-                <th>State</th>
-                <th>Startdate</th>
-                <th>Enddate</th>
-                <th>Homeurl</th>
-                <th>Status</th>
-                <th>AA App Status</th>
-                <th>EX App Status</th>
-                <th>Event Notes</th>
-                <th>Event Type</th>
-                <th>New Data</th>
-                <th>Production Data</th>
-                <th>updatedAt</th>
-                <th>eventCategory</th>
-<!--                <th>Actions</th>-->
-                <th>Actions</th>
-            </tr>
-        </thead>
-    </table>
-    <br>
+<!--    <form method="post" action="/edit" > -->
+        <table id="table" class="display" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Venue</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Startdate (UTC timezone)</th>
+                    <th>Enddate (UTC timezone)</th>
+                    <th>Homeurl</th>
+                    <th>Status</th>
+                    <th>AA App Status</th>
+                    <th>EX App Status</th>
+                    <th>Event Notes</th>
+                    <th>Event Type</th>
+                    <th>New Data</th>
+                    <th>Production Data</th>
+                    <th>updatedAt (Local timezone)</th>
+                    <th>eventCategory</th>
+                    <th>Con Start Year</th>
+                    <th>Age of Con</th>
+                    <th>Ready for Prod</th>
+                    <th>Actions</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+        </table>
+        <br>
+    
+    
+<!--    </form>-->
     
 
 
