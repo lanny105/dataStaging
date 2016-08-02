@@ -13,16 +13,26 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"> 
 	<link rel="stylesheet" href="css/theme.css" type="text/css"/>
+    <style>
+        th { font-size: 12px; }
+        td { font-size: 11px; }
+    </style>
+
     <script>
         $(document).ready(function() {
-            var table = $('#table').DataTable( {
+            var table = $('#table').removeAttr('width').DataTable( {
                 "lengthMenu": [ 100, 10, 25, 50 ],
+                "autoWidth": false,
                 "ajax": "process_get",
+
                 "columns": [
                     { "data": "eventName", "defaultContent": "<i>Not set</i>" },
-                    { "data": "eventVenue", "defaultContent": "<i>Not set</i>" },
+//                    { "data": "eventVenue", "defaultContent": "<i>Not set</i>" },
                     { "data": "eventCity" ,"defaultContent": "<i>Not set</i>"},
                     { "data": "eventState" ,"defaultContent": "<i>Not set</i>"},
+                    { "data": "eventCountry" ,"defaultContent": "<i>Not set</i>"},
+                    { "data": "eventZip" ,"defaultContent": "<i>Not set</i>"},                    
+                    
                     { "data": "eventStartDate.iso",
                       "render":  function ( data, type, row) {
 
@@ -45,9 +55,9 @@
                       }
                     },
                     { "data": "eventHomeUrl" ,"defaultContent": "<i>Not set</i>"},
-                    { "data": "eventStatus" ,"defaultContent": "<i>Not set</i>"},
-                    { "data": "artistAlleyApplicationStatus" ,"defaultContent": "<i>Not set</i>"},
-                    { "data": "exhibitorApplicationStatus" ,"defaultContent": "<i>Not set</i>"},
+//                    { "data": "eventStatus" ,"defaultContent": "<i>Not set</i>"},
+//                    { "data": "artistAlleyApplicationStatus" ,"defaultContent": "<i>Not set</i>"},
+//                    { "data": "exhibitorApplicationStatus" ,"defaultContent": "<i>Not set</i>"},
                     { "data": "notes" ,"defaultContent": "<i>Not set</i>"},
                     { "data": "eventType" ,"defaultContent": "<i>Not set</i>"}, 
                     { "data": "newData" ,"defaultContent": "<i>Not set</i>"}, 
@@ -62,8 +72,8 @@
                     }, 
                     { "data": "eventCategory","defaultContent": "<i>Not set</i>"},
 //                    {"defaultContent": "<button class = 'show'>Show</button>"},
-                    { "data": "ConStartYear" ,"defaultContent": "<i>Not set</i>"}, 
-                    { "data": "AgeofCon" ,"defaultContent": "<i>Not set</i>"}, 
+//                    { "data": "ConStartYear" ,"defaultContent": "<i>Not set</i>"}, 
+//                    { "data": "AgeofCon" ,"defaultContent": "<i>Not set</i>"}, 
                     { "data": "ReadyforProd", "defaultContent": "<i>Not set</i>"},
                     { "defaultContent": "<button class = 'show'>Show</button>"},
                     { "defaultContent": "<button class = 'edit'>Edit</button>"},
@@ -76,7 +86,11 @@
                       }
                     }
                 ],
-                
+//                "columnDefs": [
+//                      { "width": "50%", "targets": 0 },
+//                ],
+
+//                fixedColumns: true
             } );
         
             $('#table tbody').on( 'click', 'button.delete', function () {
@@ -155,31 +169,37 @@
         </div><!--/.nav-collapse -->
       </div>
     </nav>
-    <div style="margin-top:60px"> 
+    <div style="margin-top:60px; "> 
     <p style = "font-size:40px">Listing Events</p>
     <a href="/add" style="font-size:large">add new event</a>
 <!--    <form method="post" action="/edit" > -->
-        <table id="table" class="display" cellspacing="0" width="100%">
+        <table id="table" class="display compact" cellspacing="0" width="100%">
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Venue</th>
+<!--                    <th>Venue</th>-->
                     <th>City</th>
                     <th>State</th>
-                    <th>Startdate (UTC timezone)</th>
-                    <th>Enddate (UTC timezone)</th>
+                    <th>Country</th>
+                    <th>Zip</th>
+                    <th>Startdate (UTC)</th>
+                    <th>Enddate (UTC)</th>
                     <th>Homeurl</th>
-                    <th>Status</th>
+<!--                    <th>Status</th>-->
+<!--
                     <th>AA App Status</th>
                     <th>EX App Status</th>
+-->
                     <th>Event Notes</th>
                     <th>Event Type</th>
                     <th>New Data</th>
                     <th>Production Data</th>
                     <th>updatedAt (Local timezone)</th>
-                    <th>eventCategory</th>
+                    <th>event Category</th>
+<!--
                     <th>Con Start Year</th>
                     <th>Age of Con</th>
+-->
                     <th>Ready for Prod</th>
                     <th>Actions</th>                    
                     <th>Actions</th>

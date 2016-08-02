@@ -27,7 +27,8 @@
         var tmp = '<%- msg %>';
         
         if(tmp == "add_failure") {
-            alert("event add failure!");
+//            alert("event add failure!");
+            $('.alert alert-warning alert-dismissible').prop("hidden",true);
         }
         
         
@@ -92,6 +93,10 @@
       </div>
     </nav>
     <div style="margin-top:80px"> 
+    <div style = "width:60%; margin-left:20%" class="alert alert-warning alert-dismissible" role="alert" hidden>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Error!</strong> event add failure!
+    </div>
     <form method="post" action="/add" style = "width:60%; margin-left:20%" onsubmit="return validateForm()"> 
         <p>
             <strong>Event Name: <font color="red">*</font></strong>
