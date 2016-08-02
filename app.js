@@ -22,6 +22,13 @@ localStorage = new LocalStorage('./scratch');
 var moment = require('moment');
 var Parse_dev = require('parse/node');
 
+
+
+
+
+
+
+
 function initParse() {
 //    Parse_dev.initialize("GGTNZ2qrKXClObC4qotCEIBCFEpytaSscYJ7yzcG",  "FEmiLsJNjftJ2kMob61vequskh6COimJvPSmYqZo");  //测试
 //    
@@ -101,6 +108,19 @@ function getParse(callback) {
     });
     
 }
+
+initParse();
+
+getParse(function(res) {
+    for(var i = 0; i < res.length; ++i) {
+        console.log(res[i].id);
+        localStorage.setItem(res[i].id,res[i].id);
+    }
+});
+
+
+
+
 
 
 
