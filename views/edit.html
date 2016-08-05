@@ -173,15 +173,13 @@
               </i>
             </span>
           </div>  
-          
-<!--          <input type="text" class="form-control" name = "eventStartDate" value='<%- event.get("eventStartDate") %>'>-->
+
         
         </p>
 
         <p>
           <strong>Event End Date (UTC timezone):<font color="red">*</font></strong>
-<!--          <input type="text" class="form-control" name = "eventEndDate" value='<%- event.get("eventEndDate") %>'>-->
-<!--          <input size="16" type="datetime" value='<%- event.get("eventEndDate") %>'>-->
+
             
           <div id="datetimepicker2" class="input-append date">
             <input data-format="MM/dd/yyyy hh:mm:ss" name = "eventEndDate" type="text" required></input>
@@ -192,18 +190,6 @@
           </div>  
                 
         </p>
-<!--
-
-        <p>
-          <strong>Event Start Time:</strong>
-          <input type="text" class="form-control" value='<%- event.get("eventStartTime") %>'>
-        </p>
-
-        <p>
-          <strong>Event End Time:</strong>
-          <input type="text" class="form-control" value='<%- event.get("eventEndTime") %>'>
-        </p>
--->
 
         <p>
           <strong>Pre-Sale Ticket Prices:<font color="red">*</font></strong>
@@ -232,8 +218,7 @@
 
         <p>
           <strong>Event Status:<font color="red">*</font></strong>
-<!--          <input type="text" class="form-control" name = "eventStatus" value='<%- event.get("eventStatus") %>'>-->
-            
+
             
           <select class="form-control" id="eventStatus" name = "eventStatus"> 
             <option value="undefined" selected>Undefined</option>
@@ -296,7 +281,6 @@
 
         <p>
           <strong>Exhibitor Application Status:</strong>
-<!--          <input type="text" class="form-control" name = "exhibitorApplicationStatus" value='<%- event.get("exhibitorApplicationStatus") %>'>-->
           <select class="form-control" id="exhibitorApplicationStatus" name = "exhibitorApplicationStatus"> 
             <option value="undefined" selected>Undefined</option>
             <option value=0>Open</option>
@@ -431,11 +415,8 @@
         <input type="hidden" class="form-control" name = "objectId" value='<%- event.id %>'>
             
         <input type="submit" class="btn btn-info" name = "action" value="Save">
-<!--        <input type="submit" class="btn btn-info" name = "action" value="Push" onclick="return validate_activity();" >-->
-        
-<!--        <button class="btn btn-default" onclick="window.location='/'"> back</button>--> 
         <a href="/show?data=<%- event.id %>">Show</a>        
-<!--        <a href="/">Back</a>-->
+
     
     </form>
     
